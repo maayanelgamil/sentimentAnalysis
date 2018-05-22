@@ -31,6 +31,8 @@ def get_html_article_from_url(allData):
     for index, link in allData.iterrows():
             try:
                 print(link['URLString'])
+                if(link['classification'] == "")
+                    continue;
                 req = urllib2.Request(link['URLString'], None, headers)
                 response = urllib2.urlopen(req, timeout=5).read()
                 soup = BeautifulSoup(response, 'html.parser')
@@ -52,6 +54,6 @@ def read_excel():
 
 
 def get_raw_data():
-    #allData = read_files()
-    #get_html_article_from_url(allData)
+    allData = read_files()
+    get_html_article_from_url(allData)
     return read_excel()

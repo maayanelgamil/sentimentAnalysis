@@ -1,6 +1,6 @@
 import string
 from nltk.corpus import stopwords
-import re
+import re, string
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -55,6 +55,9 @@ def preprocess(s):
     return tokens
 
 
+def clearup(s, chars):
+    return re.sub('[%s]' % chars, '', s).lower()
+
 def clean(data):
     # Drop empty classification or empty article
     # python doens't recognize empty string as NA
@@ -79,7 +82,14 @@ def clean(data):
         no_stopwords_tokens = []
         tokens = preprocess(line['articl_dirty_text'])
         no_stopwords_tokens = clean_stopwords(tokens)
-        text_clean.append(' '.join(no_stopwords_tokens))
+        # create line of the text
+        cleanText = ' '.join(no_stopwords_tokens)
+        # remove title from the actual article
+        cleanText = cleanText.replace(line['Title'], "")
+        # remove numbers from the textx
+        cleanText = clearup(cleanText, string.digits)
+        text_clean.append(cleanText)
+
     data['text_clean'] = text_clean
 
     #we can now explore the data classifications
