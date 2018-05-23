@@ -55,6 +55,6 @@ def read_excel():
 
 
 def get_raw_data():
-    allData = read_files()
-    get_html_article_from_url(allData)
+    #allData = read_files()
+    #get_html_article_from_url(allData)
     return read_excel()

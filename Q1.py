@@ -48,8 +48,12 @@ def tokenize(s):
     s = re.sub(r'[^\x00-\x7f]*', r'', s)
     return tokens_re.findall(s)
 
-def preprocess(s):
-    tokens = tokenize(s)
+def preprocess(s, title):
+    # remove title from the actual article
+    cleanText = s.replace(title, "")
+    # remove numbers from the textx
+    cleanText = clearup(cleanText, string.digits)
+    tokens = tokenize(cleanText)
     # To lower
     tokens = [token if emoticon_re.search(token) else token.lower() for token in tokens]
     return tokens
@@ -80,14 +84,10 @@ def clean(data):
     # Iterate the data clean it, and return it back to the data data frame
     for i, line in row_it:
         no_stopwords_tokens = []
-        tokens = preprocess(line['articl_dirty_text'])
+        tokens = preprocess(line['articl_dirty_text'], line['Title'])
         no_stopwords_tokens = clean_stopwords(tokens)
         # create line of the text
         cleanText = ' '.join(no_stopwords_tokens)
-        # remove title from the actual article
-        cleanText = cleanText.replace(line['Title'], "")
-        # remove numbers from the textx
-        cleanText = clearup(cleanText, string.digits)
         text_clean.append(cleanText)
 
     data['text_clean'] = text_clean
