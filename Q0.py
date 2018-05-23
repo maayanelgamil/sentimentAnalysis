@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from pylab import *
-import urllib2
+import urllib.request as urllib
 from bs4 import BeautifulSoup
 import os
 
@@ -34,14 +34,14 @@ def get_html_article_from_url(allData):
                 if(link['classification'] == "" or pd.isnull(link['classification'])):
                     article_column.append("")
                     continue;
-                req = urllib2.Request(link['URLString'], None, headers)
-                response = urllib2.urlopen(req, timeout=5).read()
+                req = urllib.Request(link['URLString'], None, headers)
+                response = urllib.urlopen(req, timeout=5).read()
                 soup = BeautifulSoup(response, 'html.parser')
                 links = [e.get_text() for e in soup.body.find_all('p', recursive=True)]
                 article = '\n'.join(links)
                 print(article)
                 article_column.append(article)
-            except Exception, e:
+            except Exception as e:
                 article_column.append("")
                 print(e)
     allData['articl_dirty_text'] = article_column
@@ -55,6 +55,6 @@ def read_excel():
 
 
 def get_raw_data():
-    #allData = read_files()
-    #get_html_article_from_url(allData)
+    # allData = read_files()
+    # get_html_article_from_url(allData)
     return read_excel()

@@ -96,33 +96,7 @@ def clean(data):
     # Explore gender distributation count
     print(data.classification.value_counts())
 
-    # Explore distributation of words per gender
-    positive = data[data['classification'] == 'positive']
-    negative = data[data['classification'] == 'negative']
-    neutral = data[data['classification'] == 'neutral']
-    positive_Words = pd.Series(' '.join(positive['text_clean'].astype(str)).lower().split(" ")).value_counts()[:20]
-    negative_Words = pd.Series(' '.join(negative['text_clean'].astype(str)).lower().split(" ")).value_counts()[:20]
-    neutral_Words = pd.Series(' '.join(neutral['text_clean'].astype(str)).lower().split(" ")).value_counts()[:20]
-    All_words = pd.Series(' '.join(data['text_clean'].astype(str)).lower().split(" ")).value_counts()[:10]
-
     print("**********FINISHED CLEANING THE TEXT***************")
-    print(positive_Words)
-    ts = positive_Words.plot(kind='bar', stacked=True, colormap='hot')
-    ts.plot()
-    plt.show()
-    print(negative_Words)
-    ts = negative_Words.plot(kind='bar', stacked=True, colormap='plasma')
-    ts.plot()
-    plt.show()
-    print(neutral_Words)
-    ts = neutral_Words.plot(kind='bar', stacked=True, colormap='plasma')
-    ts.plot()
-    plt.show()
-    print("**ALL WORDS**")
-    print(All_words)
-    ts = All_words.plot(kind='bar', stacked=True, colormap='Paired')
-    ts.plot()
-    plt.show()
     return data
 
 
