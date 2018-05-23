@@ -1,5 +1,5 @@
 import pandas as pd
-import numpy
+import numpy as np
 from pylab import *
 import urllib2
 from bs4 import BeautifulSoup
@@ -31,7 +31,8 @@ def get_html_article_from_url(allData):
     for index, link in allData.iterrows():
             try:
                 print(link['URLString'])
-                if(link['classification'] == "")
+                if(link['classification'] == "" or pd.isnull(link['classification'])):
+                    article_column.append("")
                     continue;
                 req = urllib2.Request(link['URLString'], None, headers)
                 response = urllib2.urlopen(req, timeout=5).read()
