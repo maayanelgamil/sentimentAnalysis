@@ -1,9 +1,7 @@
-import string
+import pandas as pd
 from nltk.corpus import stopwords
 import re, string
-import pandas as pd
-import matplotlib.pyplot as plt
-
+from nltk.stem import PorterStemmer
 
 # Define regex consts
 emoticons_str = r"""
@@ -28,7 +26,6 @@ regex_str = [
 tokens_re = re.compile(r'(' + '|'.join(regex_str) + ')', re.VERBOSE | re.IGNORECASE)
 emoticon_re = re.compile(r'^' + emoticons_str + '$', re.VERBOSE | re.IGNORECASE)
 
-
 # Create stop word dictionary
 punctuation = list(string.punctuation)
 stop = stopwords.words('english') + punctuation
@@ -36,17 +33,20 @@ stop = stopwords.words('english') + punctuation
 
 def clean_stopwords(text):
     no_stopwords_tokens = []
-
-    # Remove stop words
+    ps = PorterStemmer()
+    # Remove stop words and stem
     for token in text:
         if token not in stop:
+            token = ps.stem(token)
             no_stopwords_tokens.append(token)
 
     return no_stopwords_tokens
 
+
 def tokenize(s):
     s = re.sub(r'[^\x00-\x7f]*', r'', s)
     return tokens_re.findall(s)
+
 
 def preprocess(s, title):
     # remove title from the actual article
@@ -62,7 +62,10 @@ def preprocess(s, title):
 def clearup(s, chars):
     return re.sub('[%s]' % chars, '', s).lower()
 
+
 def clean(data):
+    title_column_name = "title_clean"
+    article_column_name = "text_clean"
     # Drop empty classification or empty article
     # python doens't recognize empty string as NA
     # therefor we'll replace all empty string before using dropna
@@ -74,14 +77,13 @@ def clean(data):
     # now we'll remove all the irrelevent classifications
     data.drop(data[data.classification == 'not relevant'].index, inplace=True)
 
-
     print('irrelevant rows removed')
     print("now lets clean the text")
 
     row_it = data.iterrows()
     text_clean = []
 
-    # Iterate the data clean it, and return it back to the data data frame
+    # Iterate the article_dirty_text clean it, and return it back to the data data frame
     for i, line in row_it:
         no_stopwords_tokens = []
         tokens = preprocess(line['articl_dirty_text'], line['Title'])
@@ -90,13 +92,24 @@ def clean(data):
         cleanText = ' '.join(no_stopwords_tokens)
         text_clean.append(cleanText)
 
-    data['text_clean'] = text_clean
+    data[article_column_name] = text_clean
 
-    #we can now explore the data classifications
-    # Explore gender distributation count
+    row_it = data.iterrows()
+    title_clean = []
+
+    # Iterate the Title dirty text clean it, and return it back to the data data frame
+    for i, line in row_it:
+        no_stopwords_tokens = []
+        tokens = preprocess(line['Title'], "")
+        no_stopwords_tokens = clean_stopwords(tokens)
+        # create line of the text
+        cleanTitle = ' '.join(no_stopwords_tokens)
+        title_clean.append(cleanTitle)
+
+    data[title_column_name] = title_clean
+
     print(data.classification.value_counts())
 
-    print("**********FINISHED CLEANING THE TEXT***************")
     return data
 
 
